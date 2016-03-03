@@ -11,6 +11,7 @@ var MdAws = require('./md-aws/md-aws');
 //Link api http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 //Tutorial link http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-examples.html
 //Multiple uploads https://codeforgeek.com/2016/01/multiple-file-upload-node-js/
+//https://github.com/braitsch/node-login
 
 var app = express();
 var s3 = new AWS.S3();
@@ -39,7 +40,30 @@ var storage =   multer.diskStorage({
     callback(null,newName);
   }
 });
-var upload = multer({ storage : storage }).array('uploadedImages',3);
+var upload = multer({ storage : storage }).array('uploadedImages',10);
+/**
+* Helper method allows to externalize parameters
+* @return Object
+*/
+function getObjectsParams(albumDeleteAble,bucket) {
+  var img1 = 'test/photo10_1457020855230.jpg',
+      img2 = 'test/photo11_1457020855220.jpg',
+      img3 = 'test/photo12_1457020855212.jpg',
+      album = 'test/';
+  var objectsToDelete = [{Key: img1},{Key: img2},{Key: img3}];
+  //var albumDeleteAble = false;
+  if (albumDeleteAble) { //Checks if album delete able
+      //Retrieve all images for the sended album (user will send album name from request)
+      //and join themes to the objects to delete
+      //be sure that the album item is the last one in the array
+      objectsToDelete.push({Key:album});
+   }
+  var params = {
+    Bucket: bucket,
+    Delete: {Objects: objectsToDelete}
+  };
+  return params;
+}
 /**
  * Spécification du chemin des fichiers static
  * */
@@ -62,11 +86,11 @@ app.use(bodyParser.json())
         req.files.forEach(function (item, index, array) {
           //console.log(s3);
           var params = {
-            Bucket: 'mackydieng.vacances',
-            Key: 'paris/'+item.filename,
+            Bucket: 'Macky.Dieng.1457022074750',
+            Key: 'test/'+item.filename,
             ACL: 'public-read'
           };
-          mdaws.sendObject(fs, item.path, s3, params);
+          mdaws.sendFileObject(fs, item.path, params);
         })
         //console.log(req.files);
         console.log("File is uploaded");
@@ -77,18 +101,48 @@ app.use(bodyParser.json())
 * Register user and create he bucket automatically
 **/
 .post('/register', urlencodedParser,function(req,res) {
-    console.log(req.body);
+    //console.log(req.body);
+    var bucketName = req.body.fname+'.'+req.body.lname+'.'+Date.now();
+    var params = { Bucket: bucketName, ACL: 'private'};
+    mdaws.createBucket(params);
     res.redirect('/');
 })
+
 /**
-* Create user albums route
+* Route that allows to create user albums
 **/
 .post('/album/create', urlencodedParser,function(req,res) {
-    console.log(req.body);
+    var albumName = req.body.name+'.'+Date.now()+'/';
+    var params = {
+      Bucket: 'Macky.Dieng.1457022074750',
+      ACL: 'private',
+      Key : albumName,
+      Body: 'nada'
+    };
+    mdaws.sendObject(params);
     res.redirect('/');
 })
 /**
- * Lancement du serveur sur le port 3000
+* Route for delete specifical bucket
+*/
+.get('/bucket/delete/:name', function(req,res) {
+    var bucketName = req.params.name;
+    var objectsParams = getObjectsParams(true,bucketName);
+    mdaws.deleteObjects(objectsParams); //Deleting all albums with there contents
+    var params = {Bucket: bucketName};
+    mdaws.deleteBucket(params); //Now bucket is empty we can delete it
+    res.redirect('/');
+})
+/**
+* Route for delete many objects
+*/
+.get('/objects/delete', function(req,res) {
+    var objectsParams = getObjectsParams(true,'Macky.Dieng.1457022074750');
+    mdaws.deleteObjects(objectsParams);
+    res.redirect('/');
+})
+/**
+ * Launtching the server on port 3000
  * */
 app.listen(3000);
 console.log("Le serveur écoute sur le port 3000");
