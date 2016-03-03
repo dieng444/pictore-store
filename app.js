@@ -4,57 +4,88 @@ var bodyParser = require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 var ejs = require('ejs');
 var fs = require('fs');
+var multer = require('multer');
 var AWS = require('aws-sdk');
+var MdAws = require('./md-aws/md-aws');
 //AWS.config.region = 'us-standard';
 //Link api http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 //Tutorial link http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-examples.html
+//Multiple uploads https://codeforgeek.com/2016/01/multiple-file-upload-node-js/
 
 var app = express();
-
 var s3 = new AWS.S3();
+var mdaws = new MdAws(s3);
+
 var params = {
-  Bucket: 'mackydieng.vacanecs', /* required */
+  Bucket: 'mackydieng.vacances', /* required */
 };
-function findAllObjects() {
-  s3.listObjects(params,function(err, data) {
-    console.log(data);
-    if (err) { console.log("Error:", err); }
-    else {
-      var items  = data.Contents;
-      for (var index in items) {
-        var item = items[index];
-        console.log(item.Key);
-        ///console.log("Bucket: ", bucket.Name, '\ndate : ', bucket.CreationDate);
-      }
-      //console.log(data);
-    }
-  });
+function read() {
+  var items = mdaws.findAllObjects(params);
+  console.log(items);
+  for (var index in items) {
+    var item = items[index];
+    console.log(item.Key);
+  }
 }
-findAllObjects();
+//read();
 // Read in the file, convert it to base64, store to S3
-function sendObject() {
-  var fileName = 'ui/uploads/images/image_1.jpg';
-  fs.readFile(fileName, function (err, data) {
-    if (err) { throw err; }
-    var params = {Bucket: 'mackydieng.vacances', Key: 'paris/toure-eiffel.jgp', Body: data};
-    s3.putObject(params, function(err, data) {
-        if (err)
-            console.log(err)
-        else
-            console.log("Successfully uploaded data to myBucket/myKey");
-      });
-  });
-}
+
+var storage =   multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, 'ui/uploads/images/');
+  },
+  filename: function (req, file, callback) {
+    var newName = mdaws.getUniqFileName(file.originalname);
+    callback(null,newName);
+  }
+});
+var upload = multer({ storage : storage }).array('uploadedImages',3);
 /**
  * Spécification du chemin des fichiers static
  * */
 app.use(express.static(__dirname + '/ui'))
 app.use(express.static(__dirname + '/node_modules'))
+app.use(bodyParser.json())
+
 /**
  * Route par défaut (le home)
  * */
 .get('/', function(req, res) {
     res.render('index.ejs', {});
+})
+/**
+ * Route par d'upload d'une image
+ * */
+.post('/uploadFiles', function(req, res) {
+    upload(req,res,function(err) {
+        if(err) { console.log(err); }
+        req.files.forEach(function (item, index, array) {
+          //console.log(s3);
+          var params = {
+            Bucket: 'mackydieng.vacances',
+            Key: 'paris/'+item.filename,
+            ACL: 'public-read'
+          };
+          mdaws.sendObject(fs, item.path, s3, params);
+        })
+        //console.log(req.files);
+        console.log("File is uploaded");
+    });
+  res.redirect('/');
+})
+/**
+* Register user and create he bucket automatically
+**/
+.post('/register', urlencodedParser,function(req,res) {
+    console.log(req.body);
+    res.redirect('/');
+})
+/**
+* Create user albums route
+**/
+.post('/album/create', urlencodedParser,function(req,res) {
+    console.log(req.body);
+    res.redirect('/');
 })
 /**
  * Lancement du serveur sur le port 3000

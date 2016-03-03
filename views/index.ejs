@@ -8,5 +8,27 @@
         </head>
     <body>
       <h1>Hello Macky Dieng</h1>
+      <form action="/uploadFiles" method="post" enctype="multipart/form-data">
+        <input type="file" multiple="multiple" accept="image/*" name="uploadedImages"/><br/>
+        <input type="submit" value="Upload" />
+      </form>
+      <!-- <img src="https://s3.amazonaws.com/mackydieng.vacances/paris/photo10_1456955417784.jpg" alt="" /> -->
+      <br>
+      <!--User registration form -->
+      <h2>Créer un nouveau compte</h2>
+      <form class="" action="/register" method="post">
+        <input type="text" name="fname" value="" placeholder="Votre prénom"><br>
+        <input type="text" name="lname" value="" placeholder="Votre nom"><br>
+        <input type="text" name="email" value="" placeholder="Votre email"><br>
+        <input type="password" name="password" value="" placeholder="Votre mot de passe"><br>
+        <input type="password" name="pwdconfirm" value="" placeholder="Confirmez le mot de passe"><br>
+        <input type="submit" name="submit" value="Envoyer">
+      </form>
+      <!--Create album form -->
+      <h2>Créer un nouveau album</h2>
+      <form class="" action="/register" method="post">
+        <input type="text" name="name" value="" placeholder="Nom de l'album"><br>
+        <input type="submit" name="submit" value="Envoyer">
+      </form>
     </body>
 </html>
