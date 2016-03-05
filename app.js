@@ -6,34 +6,17 @@ var ejs = require('ejs');
 var fs = require('fs');
 var multer = require('multer');
 var AWS = require('aws-sdk');
-var MongoClient = require('mongodb').MongoClient;
-var MongoDB 	= require('mongodb').Db;
-var Server 		= require('mongodb').Server;
+var MdAws = require('./md-aws/md-aws');
+var NodeMongodbManager = require('./app/back/modules/node-mongodb-manager/nmm');
 
 var dbPort 		= 27017;
 var dbHost 		= 'localhost';
 var dbName 		= 'picturestore';
 
-var MdAws = require('./md-aws/md-aws');
-//AWS.config.region = 'us-standard';
-//Link api http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
-//Tutorial link http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-examples.html
-//Multiple uploads https://codeforgeek.com/2016/01/multiple-file-upload-node-js/
-//https://github.com/braitsch/node-login
-//MongoDb for Node.js http://mongodb.github.io/node-mongodb-native/2.1/api/
-var db = new MongoDB(dbName, new Server(dbHost, dbPort, {auto_reconnect: true}), {w: 1});
-	db.open(function(e, d){
-	if (e) {
-		console.log(e);
-	}	else{
-		console.log('connected to database :: ' + dbName);
-	}
-});
-
 var app = express();
 var s3 = new AWS.S3();
 var mdaws = new MdAws(s3);
-var url = 'mongodb://localhost:27017/picturestore';
+var db = new NodeMongodbManager(dbPort, dbHost, dbName).getDB();
 
 var params = {
   Bucket: 'mackydieng.vacances', /* required */
@@ -98,7 +81,7 @@ var storage =   multer.diskStorage({
     callback(null, 'ui/uploads/images/');
   },
   filename: function (req, file, callback) {
-    var newName = mdaws.getUniqFileName(file.originalname);
+    var newName = mdaws.getUniqueFileName(file.originalname);
     callback(null,newName);
   }
 });
@@ -186,11 +169,11 @@ app.use(bodyParser.json())
             password:req.body.password,
           };
     createNewAccount(data,function(result){
-      console.log("Inserted a document into the restaurants collection.");
+      console.log("Inserted a document into collection.");
       console.log(result);
     });
     createNewBucket(bucketData,function(result){
-      console.log("Inserted a document into the restaurants collection.");
+      console.log("Inserted a document into collection.");
       console.log(result);
     });
 

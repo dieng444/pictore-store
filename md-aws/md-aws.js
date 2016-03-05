@@ -2,7 +2,7 @@
 * Module Macky Dieng - amazon Web Service
 */
 module.exports = function (s3) {
-  var data = null;
+  data = null;
   this.s3 = s3;
   /*assignValue = function(value) {
     data = value;
@@ -47,7 +47,7 @@ module.exports = function (s3) {
   * @param file : the uploaded file to rename
   * @return String
   */
-  this.getUniqFileName = function(file) {
+  this.getUniqueFileName = function(file) {
     var fileExt = (file).split('.').pop();
     var fileName = (file).split('.').shift();
     var cleanedFile = (fileName).replace(/ /gi,'_');
