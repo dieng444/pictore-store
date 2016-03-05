@@ -6,16 +6,34 @@ var ejs = require('ejs');
 var fs = require('fs');
 var multer = require('multer');
 var AWS = require('aws-sdk');
+var MongoClient = require('mongodb').MongoClient;
+var MongoDB 	= require('mongodb').Db;
+var Server 		= require('mongodb').Server;
+
+var dbPort 		= 27017;
+var dbHost 		= 'localhost';
+var dbName 		= 'picturestore';
+
 var MdAws = require('./md-aws/md-aws');
 //AWS.config.region = 'us-standard';
 //Link api http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 //Tutorial link http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-examples.html
 //Multiple uploads https://codeforgeek.com/2016/01/multiple-file-upload-node-js/
 //https://github.com/braitsch/node-login
+//MongoDb for Node.js http://mongodb.github.io/node-mongodb-native/2.1/api/
+var db = new MongoDB(dbName, new Server(dbHost, dbPort, {auto_reconnect: true}), {w: 1});
+	db.open(function(e, d){
+	if (e) {
+		console.log(e);
+	}	else{
+		console.log('connected to database :: ' + dbName);
+	}
+});
 
 var app = express();
 var s3 = new AWS.S3();
 var mdaws = new MdAws(s3);
+var url = 'mongodb://localhost:27017/picturestore';
 
 var params = {
   Bucket: 'mackydieng.vacances', /* required */
@@ -27,6 +45,50 @@ function read() {
     var item = items[index];
     console.log(item.Key);
   }
+}
+/**
+* Create new account
+*/
+var createNewAccount = function(data, callback) {
+   db.collection('users').insertOne(data, function(err, result) {
+     if (err) {
+       console.error(err);
+     }
+    callback(result);
+  });
+}
+/**
+* Create new user bucket
+*/
+var createNewBucket = function(data, callback) {
+   db.collection('buckets').insertOne(data, function(err, result) {
+     if (err) {
+       console.error(err);
+     }
+    callback(result);
+  });
+}
+/**
+* Create new album
+*/
+var createNewAlbum = function(data, callback) {
+   db.collection('albums').insertOne(data, function(err, result) {
+     if (err) {
+       console.error(err);
+     }
+    callback(result);
+  });
+}
+/**
+* Adding more images action
+*/
+var addImages = function(data, callback) {
+   db.collection('images').insertMany(data, function(err, result) {
+     if (err) {
+       console.error(err);
+     }
+    callback(result);
+  });
 }
 //read();
 // Read in the file, convert it to base64, store to S3
@@ -83,17 +145,27 @@ app.use(bodyParser.json())
 .post('/uploadFiles', function(req, res) {
     upload(req,res,function(err) {
         if(err) { console.log(err); }
-        req.files.forEach(function (item, index, array) {
-          //console.log(s3);
-          var params = {
+        var images = req.files;
+        data = new Array();
+        for(i in images) {
+          /*var params = {
             Bucket: 'Macky.Dieng.1457022074750',
-            Key: 'test/'+item.filename,
+            Key: 'test/'+images[i].filename,
             ACL: 'public-read'
           };
-          mdaws.sendFileObject(fs, item.path, params);
+          mdaws.sendFileObject(fs, item.path, params);*/
+          data.push(
+                    {
+                      name:images[i].filename,
+                      album:"paris",
+                      visibility:true
+                    }
+                  );
+        }
+        addImages(data,function(result){
+          console.log("Inserted a document into the restaurants collection.");
+          console.log(result);
         })
-        //console.log(req.files);
-        console.log("File is uploaded");
     });
   res.redirect('/');
 })
@@ -104,7 +176,24 @@ app.use(bodyParser.json())
     //console.log(req.body);
     var bucketName = req.body.fname+'.'+req.body.lname+'.'+Date.now();
     var params = { Bucket: bucketName, ACL: 'private'};
-    mdaws.createBucket(params);
+    var bucketData = {name:bucketName,user:req.body.email};
+    //mdaws.createBucket(params);
+    data = {
+            firstName:req.body.fname,
+            lastName:req.body.lname,
+            description:req.body.desc,
+            email:req.body.email,
+            password:req.body.password,
+          };
+    createNewAccount(data,function(result){
+      console.log("Inserted a document into the restaurants collection.");
+      console.log(result);
+    });
+    createNewBucket(bucketData,function(result){
+      console.log("Inserted a document into the restaurants collection.");
+      console.log(result);
+    });
+
     res.redirect('/');
 })
 
@@ -119,7 +208,17 @@ app.use(bodyParser.json())
       Key : albumName,
       Body: 'nada'
     };
-    mdaws.sendObject(params);
+    var data = {
+                  name:req.body.name,
+                  bucket:"macky.dieng.66778",
+                  visibility:true
+               };
+
+    //mdaws.sendObject(params);
+    createNewAlbum(data, function(result){
+      console.log("Inserted a document into the restaurants collection.");
+      console.log(result);
+    })
     res.redirect('/');
 })
 /**
