@@ -8,15 +8,18 @@ var multer = require('multer');
 var AWS = require('aws-sdk');
 var MdAws = require('./md-aws/md-aws');
 var NodeMongodbManager = require('./app/back/modules/node-mongodb-manager/nmm');
-
-var dbPort 		= 27017;
-var dbHost 		= 'localhost';
-var dbName 		= 'picturestore';
+var UserController = require('./app/back/modules/node-user-account-manager/controllers/UserController');
+//AWS.config.region = 'us-standard';
+//Link api http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
+//Tutorial link http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-examples.html
+//Multiple uploads https://codeforgeek.com/2016/01/multiple-file-upload-node-js/
+//https://github.com/braitsch/node-login
+//MongoDb for Node.js http://mongodb.github.io/node-mongodb-native/2.1/api/
 
 var app = express();
 var s3 = new AWS.S3();
 var mdaws = new MdAws(s3);
-var db = new NodeMongodbManager(dbPort, dbHost, dbName).getDB();
+var userCtrl = new UserController();
 
 var params = {
   Bucket: 'mackydieng.vacances', /* required */
@@ -156,8 +159,9 @@ app.use(bodyParser.json())
 * Register user and create he bucket automatically
 **/
 .post('/register', urlencodedParser,function(req,res) {
+    userCtrl.registerAction(req,res);
     //console.log(req.body);
-    var bucketName = req.body.fname+'.'+req.body.lname+'.'+Date.now();
+    /*var bucketName = req.body.fname+'.'+req.body.lname+'.'+Date.now();
     var params = { Bucket: bucketName, ACL: 'private'};
     var bucketData = {name:bucketName,user:req.body.email};
     //mdaws.createBucket(params);
@@ -175,7 +179,7 @@ app.use(bodyParser.json())
     createNewBucket(bucketData,function(result){
       console.log("Inserted a document into collection.");
       console.log(result);
-    });
+    });*/
 
     res.redirect('/');
 })

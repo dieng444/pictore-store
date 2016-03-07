@@ -34,3 +34,6 @@ node_modules
 
 #Upload directory
 ui/uploads
+
+#description file
+ui/description.odt
