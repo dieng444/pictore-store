@@ -14,7 +14,7 @@ var db = null; //static variable shared by all instances
 * @license MIT - http://opensource.org/licenses/MIT
 * @copyright 2016 the author
 *
-* Represents a manager
+* Represents a NodeMongodbManager
 * @constructor
 */
 module.exports = function() {

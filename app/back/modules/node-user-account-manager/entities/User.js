@@ -11,6 +11,7 @@ module.exports = function(data) {
 
     var password;
 
+    var collection = "users";
 
     this.init = function() {
       for(attr in data) {
@@ -45,6 +46,9 @@ module.exports = function(data) {
     }
     this.getPassword = function() {
       return password;
+    }
+    this.getCollection = function() {
+      return collection;
     }
     /**
     * Is importante to call the init method at the end of the class

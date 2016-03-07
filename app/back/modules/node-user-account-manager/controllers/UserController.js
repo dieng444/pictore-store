@@ -2,19 +2,16 @@
 /****Dependencies*****/
 var UserManager = require('../models/UserManager');
 var User = require('../entities/User');
+
 module.exports = function() {
 
   var manager = new UserManager();
 
   this.registerAction = function(req, res) {
     var user = new User(req.body);
-    //console.log(user);
-    console.log(user.getFirstName());
-    user.setFirstName("Macky");
-    console.log(user.getFirstName());
-    /*console.log(user.getLastName());
-    console.log(user.getEmail());
-    console.log(user.getPassword());*/
+    //console.log(user.getCollection());
+    manager.persist(user);
+    manager.save();
   }
   this.updateAction = function(req, res) {
     console.log("updateUserAction ok!");
