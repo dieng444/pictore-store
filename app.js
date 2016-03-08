@@ -183,7 +183,14 @@ app.use(bodyParser.json())
 
     res.redirect('/');
 })
-
+.post('/update', urlencodedParser,function(req,res) {
+    userCtrl.updateAction(req,res);
+    res.redirect('/');
+})
+.post('/login', urlencodedParser,function(req,res) {
+    userCtrl.loginAction(req,res);
+    res.redirect('/');
+})
 /**
 * Route that allows to create user albums
 **/
@@ -225,6 +232,28 @@ app.use(bodyParser.json())
 .get('/objects/delete', function(req,res) {
     var objectsParams = getObjectsParams(true,'Macky.Dieng.1457022074750');
     mdaws.deleteObjects(objectsParams);
+    res.redirect('/');
+})
+/**
+* Route for delete many objects
+*/
+.get('/admin', function(req,res) {
+    userCtrl.adminAction(req,res);
+    res.redirect('/');
+})
+/**
+* Route for delete many objects
+*/
+.get('/user/albums', function(req,res) {
+    userCtrl.userAlbumsAction(req,res);
+    res.redirect('/');
+})
+.get('/album', function(req,res) {
+    userCtrl.albumAction(req,res);
+    res.redirect('/');
+})
+.get('/user/delete/:id', function(req,res) {
+    userCtrl.deleteUserAccountAction(req,res);
     res.redirect('/');
 })
 /**

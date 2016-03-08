@@ -1,6 +1,8 @@
 
 module.exports = function(data) {
 
+    var id = null;
+
     var firstName;
 
     var lastName;
@@ -11,7 +13,7 @@ module.exports = function(data) {
 
     var password;
 
-    var collection = "users";
+    //var collection = "users";
 
     this.init = function() {
       for(attr in data) {
@@ -22,6 +24,12 @@ module.exports = function(data) {
           }
         }
       }
+    }
+    this.setId = function(_id) {
+        id = _id;
+    }
+    this.getId = function() {
+      return id;
     }
     this.setFirstName = function(fname) {
       firstName = fname;
@@ -47,9 +55,9 @@ module.exports = function(data) {
     this.getPassword = function() {
       return password;
     }
-    this.getCollection = function() {
+    /*this.getCollection = function() {
       return collection;
-    }
+    }*/
     /**
     * Is importante to call the init method at the end of the class
     * That means all the class attributs and function are been attached to her
