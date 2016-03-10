@@ -1,10 +1,3 @@
-/**********************************************************
-* UserManager object, allows to manage an User entity     *
-***********************************************************/
-
-/**************************************************
-*                   Dependencies                  *
-***************************************************/
 var util = require('util');
 var User = require('../entities/User');
 var MainManager = require('./MainManager');

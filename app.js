@@ -181,7 +181,7 @@ app.use(bodyParser.json())
       console.log(result);
     });*/
 
-    res.redirect('/');
+    //res.redirect('/');
 })
 .post('/update', urlencodedParser,function(req,res) {
     userCtrl.updateAction(req,res);

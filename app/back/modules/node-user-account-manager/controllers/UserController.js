@@ -1,5 +1,4 @@
 
-/****Dependencies*****/
 var UserManager = require('../models/UserManager');
 var User = require('../entities/User');
 
@@ -8,9 +7,8 @@ module.exports = function() {
   var manager = new UserManager();
 
   this.registerAction = function(req, res) {
-    console.log(req.body);
-    var user = new User(req.body);
-    manager.persist(user);
+    var user = new User({});
+    manager.persist();
     manager.save();
   }
   this.removeAction = function(req, res) {

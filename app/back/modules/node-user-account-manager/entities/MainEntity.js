@@ -1,6 +1,5 @@
-/***************************************************************************
-* Class MainEntity - an nodejs module representing super class of entities *
-****************************************************************************/
+var util = require('../../utils/Util')
+  , MyError = require('../../utils/Error');
 
 /**
 * @author Macky Dieng
@@ -8,12 +7,18 @@
 * @copyright 2016 the author
 *
 * Represents a MainEntity
-* @constructor
-* @param {Object} data - the data object with which to initialize
-* the class attributes
+* @class
+* @param {Object} data - the data object with which to initialize the class attributes
 */
 function MainEntity(data) {
+
+  /**
+  * Allows to initialize subclasses attributes
+  * @method
+  */
   this.init = function() {
+    if(util.isEmpty(data))
+      throw MyError.getInstance("Empty object passed to the entity constructor, check the data parameter of your entity");
     for(attr in data) {
       var method = 'set'+attr.charAt(0).toUpperCase() + attr.slice(1);
       for(key in this) {
@@ -26,5 +31,5 @@ function MainEntity(data) {
   /****Do not touch the following method position***/
   this.init();
 }
-/***Exporting the module**/
+
 module.exports = MainEntity;
