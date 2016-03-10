@@ -1,5 +1,5 @@
 /**************************************************
-* An Node.js module for MongoDB database manager  *
+* An Nodejs module for MongoDB database manager   *
 ***************************************************/
 /**************************************************
 *                   Dependencies                  *
@@ -7,7 +7,8 @@
 var MongoDB = require('mongodb').Db;
 var Server = require('mongodb').Server;
 var config = require('./config');
-var db = null; //static variable shared by all instances
+/**static variable shared by all instances*/
+var db = null;
 
 /**
 * @author Macky Dieng
@@ -19,60 +20,44 @@ var db = null; //static variable shared by all instances
 */
 module.exports = function() {
 
-    /**private variable database port*/
+    /**Private variable, the database port*/
     var port = config.dbPort;
 
-    /**private variable database host*/
+    /**Private variable, the database host*/
     var host = config.dbHost;
 
-    /**private variable database name*/
+    /**Private variable, the database name*/
     var name = config.dbName;
 
-    /**private variable errors array, allows to store errors*/
-    var errors = new Array();
-
+    /**
+    * Private helper function, allows to display errors
+    * @param {string} msg - message to display in the error
+    */
+    var displayErrors = function(msg) {
+      var err = {database:db, code:400, messgae:msg };
+      console.log('Errors occurred on NodeMongodbManager...');
+      console.log(err);
+      console.log('You should maybe check parameters definition in the config.js file...');
+      return;
+    }
     /****Errors checking***/
     if(port==null) {
-			errors.push({
-        database:db,
-				code:400,
-				messgae:'Database port can\'t be null, port = '+port
-		 	});
-	 }
-   if(host==null) {
-			errors.push({
-        database:db,
-				code:400,
-				messgae:'Database host can\'t be null, host = '+host
-			});
-		}
+      displayErrors('Database port can\'t be null, port = '+port);
+	  }
+    if(host==null) {
+      displayErrors('Database host can\'t be null, host = '+host);
+    }
     if(name==null) {
-			errors.push({
-        database:db,
-				code:400,
-				messgae:'Database name can\'t be null, name = '+name
-			});
-		}
-    /****
-    * In the case where the manager is instantiated as new NodeMongodbManager()
-    * without being followed by GetDB method, the following condition
-    * will automatically display errors if there has
-    */
-    if (errors.length > 0 ) {
-        console.log('Errors occurred on NodeMongodbManager...');
-        console.log(errors);
-      }
+      displayErrors('Database name can\'t be null, name = '+name);
+    }
     /**
-    * public method
+    * public function
     * Return mongodb database unique instance
     * @return MongoDB
     */
     this.getDB = function() {
         if(db!=null) { //do not create a new db instance if there is one that exists
           return db;
-        }
-        if(errors.length > 0 ) { //Stopped the program if errors occurred
-          return;
         }
 				db = new MongoDB(name, new Server(host, port, {auto_reconnect: true}), {w: 1});
         db.open(function(e, d){
@@ -82,6 +67,6 @@ module.exports = function() {
         		console.log('connected to database :: ' + config.dbName);
         	}
         });
-				return db; //sending the instance when all went well
+				return db;
     }
 }

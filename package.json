@@ -6,7 +6,8 @@
     "cookie-session": "~1.1.0",
     "ejs": "~2.1.4",
     "express": "~4.11.0",
-    "mongodb": "^2.1.7"
+    "mongodb": "^2.1.7",
+    "util": "^0.10.3"
   },
   "author": "Mateo21 <mateo21@email.com>",
   "description": "Sytème de stockage extenrne dans le cloud"
