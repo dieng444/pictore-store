@@ -1,15 +1,16 @@
 
-var UserManager = require('../models/UserManager');
+var UserModel = require('../models/UserModel');
 var User = require('../entities/User');
 
-module.exports = function() {
+function UserController() {
 
-  var manager = new UserManager();
+  var manager = new UserModel();
 
   this.registerAction = function(req, res) {
-    var user = new User({});
-    manager.persist();
+    var user = new User(req.body);
+    manager.persist(user);
     manager.save();
+    res.redirect('/');
   }
   this.removeAction = function(req, res) {
     console.log("removeUser ok!");
@@ -61,3 +62,5 @@ module.exports = function() {
     });
   }
 }
+
+module.exports = UserController;

@@ -7,7 +7,7 @@
           <link rel="stylesheet" href="/css/style.css" media="all">
         </head>
     <body>
-      <h1>Hello Macky Dieng</h1>
+      <h1>Hello {{user.getName}} !</h1>
       <form action="/uploadFiles" method="post" enctype="multipart/form-data">
         <input type="file" multiple="multiple" accept="image/*" name="uploadedImages"/><br/>
         <input type="submit" value="Upload" />

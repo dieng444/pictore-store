@@ -7,6 +7,7 @@
     "ejs": "~2.1.4",
     "express": "~4.11.0",
     "mongodb": "^2.1.7",
+    "twig": "^0.8.8",
     "util": "^0.10.3"
   },
   "author": "Mateo21 <mateo21@email.com>",

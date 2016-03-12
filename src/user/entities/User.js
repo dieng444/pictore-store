@@ -1,11 +1,7 @@
 /**************************************************
 * Object User, represents a User                  *
 ***************************************************/
-
-/**************************************************
-*                   Dependencies                  *
-***************************************************/
-var MainEntity = require('./MainEntity');
+var MainEntity = require('../../../lib/main/main-entity');
 var util = require('util');
 
 /**
@@ -14,9 +10,14 @@ var util = require('util');
 * @copyright 2016 the author
 *
 * Represents a User
-* @constructor
-* @param {Object} data - the data object with which to initialize
-* the class attributes
+* @class
+* @param {Object} data - the data object with which to initialize the class attributes
+* @property {int} id - the current user id
+* @property {string} firstName - the user firstName
+* @property {string} lastName - the user lastName
+* @property {string} description - the user description
+* @property {string} password - the user password
+* @property {string} email - the user email
 */
 function User(data) {
 
@@ -39,6 +40,7 @@ function User(data) {
     var password;
 
     /**
+    * @method
     * Allows to set user id
     * @param {int} id - the new id to assign
     */
@@ -47,6 +49,7 @@ function User(data) {
     }
 
     /**
+    * @method
     * Return current user id
     * @return {int}
     */
@@ -55,6 +58,7 @@ function User(data) {
     }
 
     /**
+    * @method
     * Allows to set user firstName
     * @param {string} fname - new firstName to assign
     */
@@ -63,6 +67,7 @@ function User(data) {
     }
 
     /**
+    * @method
     * Return the current user firstName
     * @return {string}
     */
@@ -71,6 +76,7 @@ function User(data) {
     }
 
     /**
+    * @method
     * Allows to set user lastName
     * @param {lname} - the new lastName to assign
     */
@@ -79,6 +85,7 @@ function User(data) {
     }
 
     /**
+    * @method
     * Return the current user lastName
     * @return {string}
     */
@@ -87,6 +94,7 @@ function User(data) {
     }
 
     /**
+    * @method
     * Allows to set the user email
     * @param {string} email - the new email to assign
     */
@@ -95,6 +103,7 @@ function User(data) {
     }
 
     /**
+    * @method
     * Return the current user email
     * @return {string}
     */
@@ -103,6 +112,7 @@ function User(data) {
     }
 
     /**
+    * @method
     * Allows to set the user password
     * @param {string} pwd - the new password to assign
     */
@@ -111,6 +121,7 @@ function User(data) {
     }
 
     /**
+    * @method
     * Return the current user password
     * @return {string}
     */
@@ -118,14 +129,9 @@ function User(data) {
       return password;
     }
 
-    /***
-    * Inheritance of the super entity class
-    */
+    /***Inheritance of the super entity class*/
     MainEntity.call(this,data);
 }
-/*******************
-* Bind your Entity to the super Entity here, by completing the first parameter
-*******************/
+/***Bind your Entity to the super Entity here, by completing the first parameter*/
 util.inherits(User,MainEntity);
-
 module.exports = User;
