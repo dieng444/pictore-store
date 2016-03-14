@@ -17,7 +17,7 @@ function BucketModel() {
   var collection = 'buckets';
 
   /***Calling the super manager constructor***/
-  MainManager.call(this, collection, Bucket);
+  MainModel.call(this, collection, Bucket);
 }
 /*******************
 * Bind your manager to the super manager here by completing the first parameter

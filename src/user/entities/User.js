@@ -95,6 +95,24 @@ function User(data) {
 
     /**
     * @method
+    * Allows to set user description
+    * @param {desc} - the new description to assign
+    */
+    this.setDescription = function(desc) {
+      description = desc;
+    }
+
+    /**
+    * @method
+    * Return user description
+    * @return {string}
+    */
+    this.getDescription = function() {
+      return description;
+    }
+
+    /**
+    * @method
     * Allows to set the user email
     * @param {string} email - the new email to assign
     */

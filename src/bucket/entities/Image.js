@@ -1,7 +1,7 @@
 /**************************************************
 * Object image, represents an image                  *
 ***************************************************/
-var MainEntity = require('./MainEntity');
+var MainEntity = require('../../../lib/main/main-entity');
 var util = require('util');
 
 /**
@@ -18,6 +18,9 @@ var util = require('util');
 */
 function Image(data) {
 
+  /***The image identify*/
+  var id = null;
+
   /***The image name**/
   var name;
 
@@ -26,6 +29,24 @@ function Image(data) {
 
   /***the iamage visibility***/
   var visibility;
+
+  /**
+  * @method
+  * Allows to set image id
+  * @param {int} id - the new id to assign
+  */
+  this.setId = function(_id) {
+      id = _id;
+  }
+
+  /**
+  * @method
+  * Returns current image id
+  * @return {int}
+  */
+  this.getId = function() {
+    return id;
+  }
 
   /**
   * Allows to modify the image name

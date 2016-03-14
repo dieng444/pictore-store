@@ -17,7 +17,7 @@ function ImageModel() {
   var collection = 'images';
 
   /***Calling the super manager constructor***/
-  MainManager.call(this, collection, Image);
+  MainModel.call(this, collection, Image);
 }
 /*******************
 * Bind your manager to the super manager here by completing the first parameter

@@ -1,7 +1,7 @@
 /**************************************************
 * Class Bucket, represents a Bucket               *
 ***************************************************/
-var MainEntity = require('./MainEntity');
+var MainEntity = require('../../../lib/main/main-entity');
 var util = require('util');
 
 /**
@@ -17,11 +17,32 @@ var util = require('util');
 */
 function Bucket(data) {
 
+  /***The bucket identify*/
+  var id = null;
+
   /***Private var, the bucket name*/
   var name;
 
   /***Private var, the bucket owner*/
   var owner;
+
+  /**
+  * @method
+  * Allows to set bucket id
+  * @param {int} id - the new id to assign
+  */
+  this.setId = function(_id) {
+      id = _id;
+  }
+
+  /**
+  * @method
+  * Returns current bucket id
+  * @return {int}
+  */
+  this.getId = function() {
+    return id;
+  }
 
   /**
   * Allows to modify the bucket name
@@ -46,7 +67,7 @@ function Bucket(data) {
   * @method
   * @param {string} owner - the new owner to assign
   */
-  this.setOwner = function(owner) {
+  this.setOwner = function(_owner) {
     owner = _owner;
   }
 

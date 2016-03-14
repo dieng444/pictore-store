@@ -43,14 +43,13 @@ app.set('view engine', 'twig')
  * */
 .get('/', function(req, res) {
     var user = new User('Macky Dieng');
-    console.log(user.getName());
     res.render('layout', {user:user});
 })
 /**
  * Route par d'upload d'une image
  * */
-.post('/uploadFiles', function(req, res) {
-  bucketCtrl.addFilesAction(req,res);
+.post('/uploadFiles', urlencodedParser,function(req,res) {
+  bucketCtrl.addImagesAction(req,res);
 })
 /**
 * Registering user route
@@ -69,6 +68,12 @@ app.set('view engine', 'twig')
 **/
 .post('/album/create', urlencodedParser,function(req,res) {
     bucketCtrl.addAlbumAction(req,res);
+})
+/**
+* Route that allows to create user albums
+**/
+.post('/album/update', urlencodedParser,function(req,res) {
+    bucketCtrl.updateAlbumAction(req,res);
 })
 /**
 * Route for delete many objects

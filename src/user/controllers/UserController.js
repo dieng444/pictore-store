@@ -1,63 +1,64 @@
 
-var UserModel = require('../models/UserModel');
-var User = require('../entities/User');
+var User = require('../entities/User')
+  , Bucket = require('../../bucket/entities/Bucket')
+  , UserModel = require('../models/UserModel')
+  , BucketModel = require('../../bucket/models/BucketModel')
+  , BucketManager = require('../../../lib/bucket-manager/manager');
 
 function UserController() {
 
-  var manager = new UserModel();
+  var umodel = new UserModel();
+  var bmodel = new BucketModel();
+  var bmanager = new BucketManager();
 
   this.registerAction = function(req, res) {
     var user = new User(req.body);
-    manager.persist(user);
-    manager.save();
-    res.redirect('/');
-  }
-  this.removeAction = function(req, res) {
-    console.log("removeUser ok!");
+    var bucketName = user.getFirstName()+'.'+user.getLastName()+'.'+Date.now();
+    var params = { Bucket: bucketName, ACL: 'private'};
+    umodel.save(user,function(e, result) {
+      if(!e) {
+        var data = {name:bucketName, owner: result.lastInsertedId};
+        var bucket = new Bucket(data);
+        bmanager.createBucket(params, function(er, result) {
+          if(!er) {
+            bmodel.save(bucket, function(err,result) {
+              if(!err) res.redirect('/');
+            });
+          }
+        });
+      }
+    });
   }
   this.loginAction = function(req, res) {
-    manager.findOneBy({email: req.params.login},function(user){
+    umodel.findOneBy({email: req.params.login},function(user){
       console.log(user);
     });
   }
   this.logoutAction = function(req, res) {
     console.log("logoutAction ok!");
   }
-  this.adminAction = function(req, res) {
-    manager.findAll(function(data) {
-      console.log(data);
-    });
-  }
   this.userAlbumsAction = function(req, res) {
-    manager.findAllBy({firstName:"Baptiste"},function(albums) {
+    umodel.findAllBy({firstName:"Baptiste"},function(albums) {
       console.log("list albums yes...");
       console.log(albums);
     });
   }
   this.albumAction = function(req, res) {
-    manager.findOneBy({firstName:"Baptiste"},function(album) {
+    umodel.findOneBy({firstName:"Baptiste"},function(album) {
       console.log("album yes...");
       console.log(album);
     });
   }
-  this.deleteUserAccountAction = function(req,res) {
-    manager.findOne(req.params.id, function(user){
-      console.log(user);
-      manager.remove(user,function(result) {
-        console.log(result);
-      });
-    });
-  }
   this.updateAction = function(req,res) {
     var data = req.body;
-    manager.findOne(data.id, function(user) {
+    umodel.findOne(data.id, function(user) {
       if (user!==null) {
         user.setFirstName(data.firstName);
         user.setLastName(data.lastName);
         user.setEmail(data.email);
         user.setPassword(data.password);
-        manager.persist(user);
-        manager.save();
+        umodel.persist(user);
+        umodel.save();
       }
     });
   }

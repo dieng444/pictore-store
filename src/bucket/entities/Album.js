@@ -1,7 +1,7 @@
 /**************************************************
 * Object Album, represents an Album                  *
 ***************************************************/
-var MainEntity = require('./MainEntity');
+var MainEntity = require('../../../lib/main/main-entity');
 var util = require('util');
 
 /**
@@ -18,14 +18,38 @@ var util = require('util');
 */
 function Album(data) {
 
+  /**Private var - the user identify*/
+  var id = null;
+
   /***The album name**/
   var name;
+
+  /***The originalName of the album**/
+  var originalName;
 
   /***The album container bucket***/
   var bucket;
 
   /***Album visibility***/
   var visibility;
+
+  /**
+  * @method
+  * Allows to set album id
+  * @param {int} id - the new id to assign
+  */
+  this.setId = function(_id) {
+      id = _id;
+  }
+
+  /**
+  * @method
+  * Return current album id
+  * @return {int}
+  */
+  this.getId = function() {
+    return id;
+  }
 
   /**
   * Allows to modify the album name
@@ -46,12 +70,30 @@ function Album(data) {
   }
 
   /**
+  * Allows to modify the album original name
+  * @method
+  * @param {string} _name - the new name to assign
+  */
+  this.setOriginalName = function(_oname) {
+    originalName = _oname
+  }
+
+  /**
+  * Return the album original name
+  * @method
+  * @return {string}
+  */
+  this.getOriginalName = function() {
+    return originalName;
+  }
+
+  /**
   * Allows to modify the album current bucket
   * @method
   * @param {Bucket} _bucket - the new bucket to assign
   */
   this.setBucket = function(_bucket) {
-    bucket = _bucket
+    bucket = _bucket;
   }
 
   /**

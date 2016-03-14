@@ -1,77 +1,147 @@
-var multer = require('multer');
-var BucketManager = require('../../../lib/bucket-manager/manager');
+var multer = require('multer')
+  , util = require('../../../lib/utils/util')
+  , BucketManager = require('../../../lib/bucket-manager/manager')
+  , AlbumModel = require('../models/AlbumModel')
+  , BucketModel = require('../models/BucketModel')
+  , ImageModel = require('../models/ImageModel')
+  , Album = require('../entities/Album')
+  , Image = require('../entities/Image');
 
 function BucketController() {
 
-  var bm = new BucketManager();
+  var bmanager = new BucketManager();
+  var bmodel = new BucketModel();
+  var amodel = new AlbumModel();
+  var imodel = new ImageModel();
 
   var storage =   multer.diskStorage({
     destination: function (req, file, callback) {
-      callback(null, 'ui/uploads/images/');
+      callback(null, 'ui/public/uploads/images/');
     },
     filename: function (req, file, callback) {
-      var newName = bm.getUniqueFileName(file.originalname);
+      var newName = util.getUniqueFileName(file.originalname);
       callback(null,newName);
     }
   });
 
   var upload = multer({ storage : storage }).array('uploadedImages',10);
 
-  this.addBucketAction = function(req,res) {
-    var bucketName = req.body.fname+'.'+req.body.lname+'.'+Date.now();
-    var params = { Bucket: bucketName, ACL: 'private'};
-    var data = {name:bucketName,user:req.body.email};
-    var bucket = new Bucket(data);
-    md.createBucket(params);
-    manager.persist(bucket);
-    manager.save();
-  }
-  this.addAlbumAction = function() {
-    var albumName = req.body.nam+'/';
-    var params = {Bucket: 'Macky.Dieng.1457022074750',ACL: 'private',Key : albumName,Body: 'nada'};
-    var data = { name:req.body.name, bucket:"macky.dieng.66778", visibility: true};
-    var album = new Album(data);
-    bm.sendObject(params);
-    manager.persist(album);
-    managaer.save()
-  }
-  this.addFilesAction = function(req, res) {
-    upload(req, res, function(err) {
-        if(err) console.log(err);
-        var files = req.files;
-        for(i in files) {
-          var params = { Bucket: 'Macky.Dieng.1457022074750', Key: 'test/'+files[i].filename, ACL: 'public-read'};
-          bm.sendFileObject(files[i].path, params);
-          var data = {name:files[i].filename, album:"paris", visibility:true};
-          var image = new image(data);
-          manager.persist(image);
-        }
-        manager.save();
+  this.addAlbumAction = function(req, res) {
+    bmodel.findOne(req.body.id, function(err, bucket) { //Getting the bucket of the current user
+      if(!err) {
+        var albumName = req.body.name+'/'
+          , params = {
+            Bucket: bucket.getName(),
+            ACL: 'private',
+            Key: albumName,
+            Body: 'nada'
+          }
+          , data = {
+            name: req.body.name,
+            originalName : req.body.name,
+            bucket: bucket.getId(),
+            visibility: true
+          }
+          , album = new Album(data);
+
+        amodel.save(album, function(er, result) { //Saving the album in database
+          if(!er) {
+            bmanager.sendObject(params, function(err, result){ //sending the album to aws cloud
+              if(!err) res.redirect('/');
+              else console.log(err);
+            });
+          }
+        });
+      }
     });
+  }
+  this.updateAlbumAction = function(req,res) {
+    amodel.findOne(req.body.id, function(err, album) {
+      if(!err) {
+        album.setName(req.body.name);
+        amodel.save(album, function(er,result) {
+          if(!er) res.redirect('/');
+          else console.log(er);
+        })
+      }
+    })
+  }
+  var sendFile = function(file, bucketName, albumName, albumId) {
+    var params = {
+      Bucket: bucketName,
+      Key: albumName+'/'+file.filename,
+      ACL: 'public-read'
+    };
+    bmanager.sendFileObject(file.path, params, function(err,result) {
+      if(!err) {
+        var data = {name: file.filename, album: albumId, visibility:true};
+        var image = new Image(data);
+        imodel.save(image, function(err,result) { if(err) console.log(err); });
+      } else {
+        console.log(err);
+      }
+    });
+  }
+  this.addImagesAction = function(req, res) {
+    console.log(req.body.id);
+    amodel.findOne(req.body.id, function(err, album) { //Getting images container album
+      if (!err) {
+        //console.log(album.getBucket());
+        bmodel.findOne(album.getBucket(), function(err, bucket) { //Getting the bucket of the current user
+          //console.log(bucket.getName());
+          if(!err) {
+            upload(req, res, function(err) {
+                if(!err) {
+                  var files = req.files;
+                  for(i in files) {
+                    console.log(bucket.getName());
+                    /*sendFile(
+                      files[i],
+                      bucket.getName(),
+                      album.getName(),
+                      album.getId()
+                    );*/
+                  }
+                } else {
+                  console.log(err);
+                }
+            });
+          }
+        })
+      } else {
+        console.log(err);
+      }
+    })
+    res.redirect('/');
   }
   this.deleteBucketAction = function (req,res) {
     var id = req.params.id;
-    var bucket = manager.findOne(id);
+    var bucket = amodel.findOne(id);
     //var objectsToDelete = list of all users albums with their images
     var params = {Bucket: bucket.getName(), Delete: {Objects: objectsToDelete}};
     var bcktParam = {Bucket: bucket.getName()};
-    bm.deleteObjects(objectsParams); //Deleting all albums with there contents
-    bm.deleteBucket(bcktParam); //Now bucket is empty we can delete it
+    bmanager.deleteObjects(objectsParams); //Deleting all albums with there contents
+    bmanager.deleteBucket(bcktParam); //Now bucket is empty we can delete it
     /*
     remove all images and albums before
-    manager.remove(bucket);
+    amodel.remove(bucket);
     */
     res.redirect('/');
   }
   this.deleteAlbumAction = function(req,res) {
     var id = req.params.id;
-    var album = manager.findOne(id);
-    manager.remove(album);
+    var album = amodel.findOne(id);
+    amodel.remove(album);
   }
   this.deleteImageAction = function(req,res) {
-    var id = req.params.id;
-    var album = manager.findOne(id);
-    manager.remove(album);
+    imodel.findOne(req.params.id, function(err, image) {
+      if(!err) {
+        imodel.remove(image, function(er,result) {
+          if(!er) res.redirect('/');
+          else console.log(er);
+        })
+      }
+    })
   }
 }
 

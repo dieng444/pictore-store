@@ -17,7 +17,7 @@ function AlbumModel() {
   var collection = 'albums';
 
   /***Calling the super manager constructor***/
-  MainManager.call(this, collection, Album);
+  MainModel.call(this, collection, Album);
 }
 /*******************
 * Bind your manager to the super manager here by completing the first parameter
