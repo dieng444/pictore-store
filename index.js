@@ -31,10 +31,11 @@ function User(_name) {
 /**
  * Spécification du chemin des fichiers static
  * */
-app.use(express.static(__dirname + '/ui'))
-app.use(express.static(__dirname + '/resources'))
-app.use(express.static(__dirname + '/node_modules'))
-app.use(bodyParser.json())
+app.use(express.static(__dirname + '/ui'));
+app.use(express.static(__dirname + '/resources'));
+app.use(express.static(__dirname + '/node_modules'));
+app.use(bodyParser.json());
+app.use(session({secret:'56e58403c41eca0968145793'}));
 app.set('views', __dirname + '/ui/views/')
 app.set('view engine', 'twig')
 
@@ -48,7 +49,7 @@ app.set('view engine', 'twig')
 /**
  * Route par d'upload d'une image
  * */
-.post('/uploadFiles', urlencodedParser,function(req,res) {
+.post('/uploadFiles', urlencodedParser, function(req,res) {
   bucketCtrl.addImagesAction(req,res);
 })
 /**
@@ -62,6 +63,9 @@ app.set('view engine', 'twig')
 })
 .post('/login', urlencodedParser,function(req,res) {
     userCtrl.loginAction(req,res);
+})
+.get('/logout', urlencodedParser,function(req,res) {
+    userCtrl.logoutAction(req,res);
 })
 /**
 * Route that allows to create user albums
@@ -100,6 +104,10 @@ app.set('view engine', 'twig')
 .get('/user/delete/:id', function(req,res) {
     userCtrl.deleteUserAccountAction(req,res);
 })
+.get('/image/delete/:id', function(req,res) {
+    bucketCtrl.deleteImageAction(req,res);
+})
+.get('*', function(req, res) { res.render('404', { title: 'Page Not Found'}); });
 /**
  * Launtching the server on port 3000
  * */

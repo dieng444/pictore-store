@@ -16,8 +16,9 @@ var util = require('util');
 * @property {string} firstName - the user firstName
 * @property {string} lastName - the user lastName
 * @property {string} description - the user description
-* @property {string} password - the user password
 * @property {string} email - the user email
+* @property {string} password - the user password
+* @property {string} role - the user role
 */
 function User(data) {
 
@@ -38,6 +39,9 @@ function User(data) {
 
     /**Private var - the user password*/
     var password;
+
+    /**Private var - the user role*/
+    var role;
 
     /**
     * @method
@@ -145,6 +149,24 @@ function User(data) {
     */
     this.getPassword = function() {
       return password;
+    }
+
+    /**
+    * @method
+    * Allows to set the user role
+    * @param {string} _role - the new password to assign
+    */
+    this.setRole = function(_role) {
+      role = _role;
+    }
+
+    /**
+    * @method
+    * Returns the user role
+    * @return {string}
+    */
+    this.getRole = function() {
+      return role;
     }
 
     /***Inheritance of the super entity class*/

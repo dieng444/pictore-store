@@ -1,8 +1,3 @@
-
-/**********************************
-* An Node.js module for MongoDB database manager configuration
-**********************/
-
 /**
 * Allows to specify database configuration
 * @author Macky Dieng
