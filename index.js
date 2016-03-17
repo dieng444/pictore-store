@@ -36,15 +36,20 @@ app.use(express.static(__dirname + '/resources'));
 app.use(express.static(__dirname + '/node_modules'));
 app.use(bodyParser.json());
 app.use(session({secret:'56e58403c41eca0968145793'}));
+var template = twig.twig({
+    data:'',
+    namespaces: { 'picture-store': '/ui/views/' }
+}).render();
 app.set('views', __dirname + '/ui/views/')
 app.set('view engine', 'twig')
+
 
 /**
  * Route par défaut (le home)
  * */
 .get('/', function(req, res) {
     var user = new User('Macky Dieng');
-    res.render('layout', {user:user});
+    res.render('front/home', {user:user});
 })
 /**
  * Route par d'upload d'une image
@@ -57,6 +62,12 @@ app.set('view engine', 'twig')
 **/
 .post('/register', urlencodedParser,function(req,res) {
     userCtrl.registerAction(req,res);
+})
+/**
+* Registering user route
+**/
+.get('/register',function(req,res) {
+    res.render('user/signup',{});
 })
 .post('/update', urlencodedParser,function(req,res) {
     userCtrl.updateAction(req,res);
