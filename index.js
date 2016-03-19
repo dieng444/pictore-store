@@ -75,6 +75,9 @@ app.set('view engine', 'twig')
 .post('/login', urlencodedParser,function(req,res) {
     userCtrl.loginAction(req,res);
 })
+.get('/login',function(req,res) {
+    res.render('user/login',{});
+})
 .get('/logout', urlencodedParser,function(req,res) {
     userCtrl.logoutAction(req,res);
 })
@@ -118,6 +121,16 @@ app.set('view engine', 'twig')
 .get('/image/delete/:id', function(req,res) {
     bucketCtrl.deleteImageAction(req,res);
 })
+.get('/about', function(req,res) {
+    res.render('front/about',{});
+})
+.get('/profil', function(req,res) {
+    res.render('user/profile',{});
+})
+.get('/account', function(req,res) {
+    res.render('user/account',{});
+})
+
 .get('*', function(req, res) { res.render('404', { title: 'Page Not Found'}); });
 /**
  * Launtching the server on port 3000
