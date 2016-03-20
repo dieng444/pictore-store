@@ -16,18 +16,6 @@ var app = express();
 var userCtrl = new UserController();
 var bucketCtrl = new BucketController();
 
-function User(_name) {
-  var name = _name;
-
-  this.setName = function(_name) {
-    name = _name;
-  }
-  this.getName = function() {
-    return name;
-  }
-
-}
-
 /**
  * Spécification du chemin des fichiers static
  * */
@@ -36,10 +24,6 @@ app.use(express.static(__dirname + '/resources'));
 app.use(express.static(__dirname + '/node_modules'));
 app.use(bodyParser.json());
 app.use(session({secret:'56e58403c41eca0968145793'}));
-var template = twig.twig({
-    data:'',
-    namespaces: { 'picture-store': '/ui/views/' }
-}).render();
 app.set('views', __dirname + '/ui/views/')
 app.set('view engine', 'twig')
 
@@ -48,26 +32,25 @@ app.set('view engine', 'twig')
  * Route par défaut (le home)
  * */
 .get('/', function(req, res) {
-    var user = new User('Macky Dieng');
-    res.render('front/home', {user:user});
+    res.render('front/home', {});
 })
 /**
- * Route par d'upload d'une image
- * */
-.post('/uploadFiles', urlencodedParser, function(req,res) {
-  bucketCtrl.addImagesAction(req,res);
+* Renvoie le formulaire d'inscription
+**/
+.get('/register',function(req,res) {
+    res.render('user/signup',{});
 })
 /**
-* Registering user route
+* Route permettant d'enregistrer un utilisateur
 **/
 .post('/register', urlencodedParser,function(req,res) {
     userCtrl.registerAction(req,res);
 })
 /**
-* Registering user route
-**/
-.get('/register',function(req,res) {
-    res.render('user/signup',{});
+ * Route permettant d'uploader les images
+ * */
+.post('/uploadFiles', urlencodedParser, function(req,res) {
+  bucketCtrl.addImagesAction(req,res);
 })
 .post('/update', urlencodedParser,function(req,res) {
     userCtrl.updateAction(req,res);
@@ -130,8 +113,14 @@ app.set('view engine', 'twig')
 .get('/account', function(req,res) {
     res.render('user/account',{});
 })
+.get('/albums', function(req,res) {
+    res.render('bucket/albums',{});
+})
+.get('/images', function(req,res) {
+    res.render('bucket/images',{});
+})
 
-.get('*', function(req, res) { res.render('404', { title: 'Page Not Found'}); });
+.get('*', function(req, res) { res.render('404', { title: 'Page Not Found...', code:'404'}); });
 /**
  * Launtching the server on port 3000
  * */
