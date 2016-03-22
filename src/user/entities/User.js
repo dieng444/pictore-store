@@ -16,6 +16,8 @@ var util = require('util');
 * @property {string} firstName - the user firstName
 * @property {string} lastName - the user lastName
 * @property {string} description - the user description
+* @property {string} picture - the user picture
+* @property {string} coverImage - the user cover image
 * @property {string} email - the user email
 * @property {string} password - the user password
 * @property {string} role - the user role
@@ -33,6 +35,12 @@ function User(data) {
 
     /**Private var - the user description*/
     var description;
+
+    /***Private var - the user picture**/
+    var picture = null;
+
+    /***Private var - the user cover image**/
+    var coverImage = null;
 
     /**Private var - the email*/
     var email;
@@ -100,7 +108,7 @@ function User(data) {
     /**
     * @method
     * Allows to set user description
-    * @param {desc} - the new description to assign
+    * @param {string} desc - the new description to assign
     */
     this.setDescription = function(desc) {
       description = desc;
@@ -113,6 +121,42 @@ function User(data) {
     */
     this.getDescription = function() {
       return description;
+    }
+
+    /**
+    * @method
+    * Allows to set user picture
+    * @param {string} _picture - the new picture to assign
+    */
+    this.setPicture = function(_picture) {
+      picture = _picture;
+    }
+
+    /**
+    * @method
+    * Returns the user picture
+    * @return {string}
+    */
+    this.getPicture = function() {
+      return picture;
+    }
+
+    /**
+    * @method
+    * Allows to set user cover image
+    * @param {string} _coverImage - the new cover image to assign
+    */
+    this.setCoverImage = function(_coverImage) {
+      coverImage = _coverImage;
+    }
+
+    /**
+    * @method
+    * Returns the user cover image
+    * @return {string}
+    */
+    this.getCoverImage = function() {
+      return coverImage;
     }
 
     /**

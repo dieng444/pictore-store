@@ -1,17 +1,30 @@
 
-var User = require('../entities/User')
+var multer = require('multer')
+  , User = require('../entities/User')
   , Bucket = require('../../bucket/entities/Bucket')
   , UserModel = require('../models/UserModel')
   , BucketModel = require('../../bucket/models/BucketModel')
   , BucketManager = require('../../../lib/bucket-manager/manager')
-  , Auth = require('../../../lib/auth-manager/auth');
+  , Auth = require('../../../lib/auth-manager/auth')
+  , util = require('../../../lib/utils/util');
 
 function UserController() {
 
   var umodel = new UserModel()
     , bmodel = new BucketModel()
     , bmanager = new BucketManager()
-    , auth = new Auth();
+    , auth = new Auth().getInstance();
+
+    var storage =   multer.diskStorage({
+      destination: function (req, file, callback) {
+        callback(null, 'ui/public/uploads/images/');
+      },
+      filename: function (req, file, callback) {
+        var newName = util.getUniqueFileName(file.originalname);
+        callback(null,newName);
+      }
+    });
+    var uploadPicture = multer({ storage : storage }).single('picture');
 
   this.registerAction = function(req, res) {
     var user = new User(req.body)
@@ -22,24 +35,28 @@ function UserController() {
       if(!err) {
         var data = {name:bucketName, owner: result.lastInsertedId};
         var bucket = new Bucket(data);
-        return res.redirect('/');
         bmanager.createBucket(params, function(err, result) {
           if(!err) {
             bmodel.save(bucket, function(err,result) {
-              if(!err) res.redirect('/');
+              if(!err)
+                res.redirect('/account');
             });
           }
         });
       }
     });
   }
-  this.loginAction = function(req,res) {
+  this.loginAction = function(req , res) {
     auth.checkAuthentication(req, res, function(err,isOk) {
       if(isOk) {
-        console.log(req.session.user);
-        res.render('layout',{successMsg:"Vous êtes maintenant connecté."});
+        auth.isGrantedRole(req, res, 'ROLE_USER', function(yes) {
+          if(yes) res.redirect('/profile');
+        });
+        auth.isGrantedRole(req, res, 'ROLE_ADMIN', function(yes) {
+          if(yes) res.redirect('/admin');
+        });
       } else {
-        res.render('layout',{errorMsg:"Identifiant ou mot de passe incorrecte."});
+        res.render('user/login',{errorMsg:"Identifiant ou mot de passe incorrect"});
       }
     });
   }
@@ -55,22 +72,46 @@ function UserController() {
   this.updateAction = function(req,res) {
     auth.isConnected(req, res, function(response) {
       if(response) {
-        var data = req.body;
-        umodel.findOne(data.id, function(user) {
-          if (user!==null) {
-            user.setFirstName(data.firstName);
-            user.setLastName(data.lastName);
-            user.setEmail(data.email);
-            user.setPassword(data.password);
-            umodel.persist(user);
-            umodel.save();
+        umodel.findOne(auth.getUser().getId(), function(err, user) {
+          if(user!=null) {
+            uploadPicture(req , res, function(err) {
+              var data = req.body;
+              user.setFirstName(data.firstName);
+              user.setLastName(data.lastName);
+              user.setDescription(data.description);
+              user.setEmail(data.email);
+              user.setPassword(data.password);
+              if(typeof req.file != 'undefined')
+                user.setPicture(req.file.filename);
+              umodel.save(user, function(err, result) {
+                if(!err)
+                  auth.setUser(user);
+                res.redirect('/account');
+              });
+            });
           }
         });
       } else {
-        res.render('layout',{errorMsg:"Vou devez être connecté pour effectuer cette action."});
+        res.redirect('/login');
       }
     })
 
+  }
+  this.accountAction = function(req,res) {
+    auth.isConnected(req, res, function(response) {
+      if(response)
+        res.render('user/account',{user:auth.getUser()});
+      else
+        res.redirect('/login');
+    });
+  }
+  this.profileAction = function(req,res) {
+    auth.isConnected(req, res, function(response) {
+      if(response)
+        res.render('user/profile',{user:auth.getUser()});
+      else
+        res.redirect('/login');
+    });
   }
 }
 

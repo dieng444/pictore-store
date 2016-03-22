@@ -25,39 +25,30 @@
       <ul class="plus-options">
         <li class="first"><a href="/profile"><i class="glyphicon glyphicon-home"></i></a></li>
         <li class="first"><a href="/account">Compte</a></li>
-        <li class="first active"><a href="/albums">Albums</a></li>
-        <li class="first"><a href="/images">Images</a></li>
+        <li class="first"><a href="/albums">Albums</a></li>
+        <li class="first active"><a href="/images">Images</a></li>
       </ul>
     </div>
   </div>
   <div id="b-content">
     <div class="row">
       <div class="col-md-12">
-        <button type="button" id="btn-add-album" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> Créer un nouveau album</button>
-        <form action="/album/create" method="post" id="album-form">
-          <input type="text" name="name" placeholder="Le nom de l'album" class="form-child">
-          <p class="error-message first">Le nom de l'album est obligatoire.</p>
-          <input type="text" name="location" placeholder="Le lieu concerné par ce album ?">
-          <input type="hidden" name="bucketId" value="{{bucket.getId}}">
-          <input type="submit" name="submit-btn" class="s-btn" value="Créer">
+        <button type="button" id="btn-add-album" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> Ajoutez des images</button>
+        <form action="/images/add" method="post" id="album-form" enctype="multipart/form-data" class="album-detail">
+          <input type="file" multiple="multiple" accept="image/*" name="uploadedImages"/>
+          <input type="submit" name="submit-btn" class="s-btn" value="Ajouter">
         </form>
       </div>
     </div>
     <div class="row">
-      {%if albums | length > 0 %}
-        {%for album in albums%}
-          <a class="col-sm-6 col-md-4" href="/album/{{album.getId}}">
-            <div class="thumbnail">
-              <img src="/img/ferrari.jpg" alt="...">
-              <div class="caption">
-                <h3>{{album.originalName}} - {{album.getLocation}}</h3>
-                <h3>{{album.getCreatedDate}}</h3>
-              </div>
-            </div>
+      {%if images | length > 0 %}
+        <div class="col-sm-6 col-md-4 image">
+          <a class="thumbnail" href="#">
+            <img src="/img/ferrari.jpg" alt="...">
           </a>
-        {%endfor%}
+        </div>
       {%else%}
-        <h2 class="no-content">Vous avez aucun album encore de créer.</h2>
+        <h2 class="no-content">Album vide</h2>
       {%endif%}
     </div>
   </div>

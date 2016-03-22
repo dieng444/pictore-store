@@ -1,4 +1,6 @@
 {%extends 'layout.twig'%}
+{%block title%}{{user.getFirstName}} {{user.getLastName}}{%endblock%}
+{%block login%}<li class="login"><a href="/logout">Déconnexion</a></li>{%endblock%}
 {%block body%}
 <section id="user-block-body">
   <div>
@@ -20,48 +22,40 @@
         <li class="first"><a href="/profile"><i class="glyphicon glyphicon-home"></i></a></li>
         <li class="first"><a href="/account">Compte</a></li>
         <li class="first"><a href="/albums">Albums</a></li>
-        <li class="first"><a href="/images">Images</a></li>
+        <li class="first active"><a href="/images">Images</a></li>
       </ul>
     </div>
   </div>
   <div id="b-content">
-  <div class="row">
-    <div class="col-md-12">
-      <button type="button" id="btn-add-album" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i> Ajoutez des images</button>
-      <form action="/album/add" method="post" id="album-form" enctype="multipart/form-data">
-        <input type="file" multiple="multiple" accept="image/*" name="uploadedImages"/>
-        <input type="submit" name="submit-btn" class="s-btn" value="Ajouter">
-      </form>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-sm-6 col-md-4">
-      <div class="thumbnail">
-        <img src="/img/ferrari.jpg" alt="...">
-        <div class="caption">
-          <h3>Toure eiffel, Paris</h3>
-          <p><a href="#" style="font-style:italic;">#dieng444</a></p>
+    <div class="row">
+      <div class="col-sm-6 col-md-4">
+        <div class="thumbnail">
+          <img src="/img/ferrari.jpg" alt="...">
+          <div class="caption">
+            <h3>Toure eiffel, Paris</h3>
+            <p><a href="#" style="font-style:italic;">#dieng444</a></p>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col-sm-6 col-md-4">
-      <div class="thumbnail">
-        <img src="/img/ferrari.jpg" alt="...">
-        <div class="caption">
-          <h3>Toure eiffel, Paris</h3>
-          <p><a href="#" style="font-style:italic;">#dieng444</a></p>
+      <div class="col-sm-6 col-md-4">
+        <div class="thumbnail">
+          <img src="/img/ferrari.jpg" alt="...">
+          <div class="caption">
+            <h3>Toure eiffel, Paris</h3>
+            <p><a href="#" style="font-style:italic;">#dieng444</a></p>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col-sm-6 col-md-4">
-      <div class="thumbnail">
-        <img src="/img/ferrari.jpg" alt="...">
-        <div class="caption">
-          <h3>Toure eiffel, Paris</h3>
-          <p><a href="#" style="font-style:italic;">#dieng444</a></p>
+      <div class="col-sm-6 col-md-4">
+        <div class="thumbnail">
+          <img src="/img/ferrari.jpg" alt="...">
+          <div class="caption">
+            <h3>Toure eiffel, Paris</h3>
+            <p><a href="#" style="font-style:italic;">#dieng444</a></p>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+</section>
 {%endblock%}

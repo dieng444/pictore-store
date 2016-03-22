@@ -1,5 +1,6 @@
 var multer = require('multer')
   , util = require('../../../lib/utils/util')
+  , Auth = require('../../../lib/auth-manager/auth')
   , fs = require('fs')
   , ObjectID = require('mongodb').ObjectID
   , BucketManager = require('../../../lib/bucket-manager/manager')
@@ -11,10 +12,11 @@ var multer = require('multer')
 
 function BucketController() {
 
-  var bmanager = new BucketManager();
-  var bmodel = new BucketModel();
-  var amodel = new AlbumModel();
-  var imodel = new ImageModel();
+  var bmanager = new BucketManager()
+    , bmodel = new BucketModel()
+    , amodel = new AlbumModel()
+    , imodel = new ImageModel()
+    , auth = new Auth().getInstance();
 
   var storage =   multer.diskStorage({
     destination: function (req, file, callback) {
@@ -28,10 +30,50 @@ function BucketController() {
 
   var upload = multer({ storage : storage }).array('uploadedImages',10);
 
+  this.albumsAction = function(req,res) {
+    auth.isConnected(req, res,function(resp){
+      var user = auth.getUser()
+      if (resp) {
+        bmodel.findOneBy({owner:user.getId()}, function(err, bucket){
+          amodel.findAllBy({bucket:bucket.getId()}, function(err,albums) {
+            if (!err) {
+              res.render('bucket/albums',{
+                user:user, albums:albums, bucket:bucket
+              });
+            }
+          })
+        })
+      } else res.redirect('/login');
+    })
+  }
+  this.albumAction = function(req,res) {
+    auth.isConnected(req, res,function(resp){
+      if(resp) {
+        var user = auth.getUser();
+        amodel.findOne(req.params.id, function(err, album) {
+          if(!err) {
+            if(album!=null) {
+              imodel.findAllBy({album:album.getId()}, function(err,images) {
+                if (!err) {
+                  res.render('bucket/albumDetail',{user:user,images:images});
+                }
+              })
+            }
+          } else res.render('500', util.getStatusMessage(500));
+        })
+      } else res.redirect('/login');
+    });
+  }
   this.addAlbumAction = function(req, res) {
-    bmodel.findOne(req.body.id, function(err, bucket) { //Getting the bucket of the current user
+    bmodel.findOne(req.body.bucketId, function(err, bucket) { //Getting the bucket of the current user
       if(!err) {
-        var albumName = req.body.name+'/'
+        var d = new Date()
+          , day = d.getDate()
+          , n = d.getMonth()
+          , year = d.getFullYear()
+          , date = day+' '+util.getStringMonth()[n]+' '+year;
+
+        var albumName = req.body.name.replace(' ','_')+'/'
           , params = {
             Bucket: bucket.getName(),
             ACL: 'private',
@@ -39,17 +81,18 @@ function BucketController() {
             Body: 'nada'
           }
           , data = {
-            name: req.body.name,
+            name: req.body.name.replace(' ','_'),
             originalName : req.body.name,
-            bucket: bucket.getId(),
-            visibility: true
+            location: req.body.location,
+            createdDate: date,
+            bucket: bucket.getId()
           }
           , album = new Album(data);
 
-        amodel.save(album, function(er, result) { //Saving the album in database
-          if(!er) {
+        amodel.save(album, function(err, result) { //Saving the album in database
+          if(!err) {
             bmanager.sendObject(params, function(err, result){ //sending the album to aws cloud
-              if(!err) res.redirect('/');
+              if(!err) res.redirect('/albums');
               else console.log(err);
             });
           }
@@ -83,7 +126,6 @@ function BucketController() {
     });
   }
   this.addImagesAction = function(req, res) {
-
     upload(req, res, function(err) { //uploading files on server disk
       amodel.findOne(req.body.id, function(err, album) { //Getting images container album
         if (!err && album!=null) {

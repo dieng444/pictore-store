@@ -13,8 +13,9 @@ var util = require('util');
 * @class
 * @param {Object} data - the data object with which to initialize the class attributes
 * @property {string} name - the bucket name
+* @property {string} location - the album pictures location
+* @property {Date} createdDate - the album created date
 * @property {Bucket} bucket - bucket of the album
-* @property {string} visibility - allows to know if the album will be visible
 */
 function Album(data) {
 
@@ -27,11 +28,15 @@ function Album(data) {
   /***The originalName of the album**/
   var originalName;
 
+  /***Album location***/
+  var location;
+
+  /***Album created date***/
+  var createdDate;
+
   /***The album container bucket***/
   var bucket;
 
-  /***Album visibility***/
-  var visibility;
 
   /**
   * @method
@@ -88,6 +93,42 @@ function Album(data) {
   }
 
   /**
+  * Allows to modify the album location
+  * @method
+  * @param {string} loc - the album location
+  */
+  this.setLocation = function(loc) {
+    location = loc;
+  }
+
+  /**
+  * Return the album location
+  * @method
+  * @return {string}
+  */
+  this.getLocation = function() {
+    return location;
+  }
+
+  /**
+  * Allows to set the album created date
+  * @method
+  * @param {Date} _createdDate - the new date to assign
+  */
+  this.setCreatedDate = function(_createdDate) {
+    createdDate = _createdDate
+  }
+
+  /**
+  * Returns the album created date
+  * @method
+  * @return {Date}
+  */
+  this.getCreatedDate = function(_createdDate) {
+    return createdDate;
+  }
+
+  /**
   * Allows to modify the album current bucket
   * @method
   * @param {Bucket} _bucket - the new bucket to assign
@@ -97,30 +138,12 @@ function Album(data) {
   }
 
   /**
-  * Return album bucket
+  * Returns album bucket
   * @method
   * @return {Bucket}
   */
   this.getBucket = function() {
     return bucket;
-  }
-
-  /**
-  * Allows to modify the album visibility
-  * @method
-  * @param {boolean} _visibility - the new visibility to assign
-  */
-  this.setVisibility = function(_visibility) {
-    visibility = _visibility;
-  }
-
-  /**
-  * Return the album visibility value
-  * @method
-  * @return {boolean}
-  */
-  this.getVisibility = function() {
-    return visibility;
   }
 
   /***Inheritance of the super entity class*/

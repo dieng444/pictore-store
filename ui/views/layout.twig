@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-    <title>Picture - Store</title>
+    <title>{%block title%}Picture - Store{%endblock%}</title>
 		<link href="/vendor/bootstrap/css/bootstrap.css" media="all" rel="stylesheet" type="text/css">
 		<link href="/css/style.css" media="all" rel="stylesheet" type="text/css">
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
@@ -29,7 +29,7 @@
 							<li><a href="/">Accueil</a></li>
 							<li><a href="/about">À propos</a></li>
 							<li><a href="/register">S'inscrire</a></li>
-							<li class="login"><a href="/login">Se connecter</a></li>
+							{%block login%}<li class="login"><a href="/login">Se connecter</a></li>{%endblock%}
 						</ul>
 					</nav>
 				</div>

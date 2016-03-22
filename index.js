@@ -19,11 +19,19 @@ var bucketCtrl = new BucketController();
 /**
  * Spécification du chemin des fichiers static
  * */
-app.use(express.static(__dirname + '/ui'));
-app.use(express.static(__dirname + '/resources'));
-app.use(express.static(__dirname + '/node_modules'));
+app.use(express.static(__dirname + '/ui'))
+app.use(express.static(__dirname + '/resources'))
+app.use(express.static(__dirname + '/node_modules'))
 app.use(bodyParser.json());
-app.use(session({secret:'56e58403c41eca0968145793'}));
+app.use(session({secret:'56e58403c41eca0968145793'}))
+/* S'il n'y a pas de todolist dans la session,
+on en crée une vide sous forme d'array avant la suite */
+.use(function(req, res, next){
+    if (typeof(req.session.user) == 'undefined') {
+        req.session.user = {};
+    }
+    next();
+})
 app.set('views', __dirname + '/ui/views/')
 app.set('view engine', 'twig')
 
@@ -52,7 +60,7 @@ app.set('view engine', 'twig')
 .post('/uploadFiles', urlencodedParser, function(req,res) {
   bucketCtrl.addImagesAction(req,res);
 })
-.post('/update', urlencodedParser,function(req,res) {
+.post('/update', urlencodedParser, function(req,res) {
     userCtrl.updateAction(req,res);
 })
 .post('/login', urlencodedParser,function(req,res) {
@@ -64,39 +72,29 @@ app.set('view engine', 'twig')
 .get('/logout', urlencodedParser,function(req,res) {
     userCtrl.logoutAction(req,res);
 })
-/**
-* Route that allows to create user albums
-**/
+.get('/album/:id', function(req,res) {
+    bucketCtrl.albumAction(req,res);
+})
+/***Route that allows to create user albums**/
 .post('/album/create', urlencodedParser,function(req,res) {
     bucketCtrl.addAlbumAction(req,res);
 })
-/**
-* Route that allows to create user albums
-**/
+/***Route that allows to create user albums**/
 .post('/album/update', urlencodedParser,function(req,res) {
     bucketCtrl.updateAlbumAction(req,res);
 })
-/**
-* Route for delete many objects
-*/
+/***Route for delete many objects**/
 .get('/album/delete/:id', function(req,res) {
   bucketCtrl.deleteAlbumAction(req,res);
+})
+.get('/albums', function(req,res) {
+    bucketCtrl.albumsAction(req,res);
 })
 /**
 * Route for delete many objects
 */
 .get('/admin', function(req,res) {
     userCtrl.adminAction(req,res);
-})
-/**
-* Route for delete many objects
-*/
-.get('/user/albums/:id', function(req,res) {
-    userCtrl.userAlbumsAction(req,res);
-})
-.get('/album', function(req,res) {
-    userCtrl.albumAction(req,res);
-    res.redirect('/');
 })
 .get('/user/delete/:id', function(req,res) {
     userCtrl.deleteUserAccountAction(req,res);
@@ -107,14 +105,11 @@ app.set('view engine', 'twig')
 .get('/about', function(req,res) {
     res.render('front/about',{});
 })
-.get('/profil', function(req,res) {
-    res.render('user/profile',{});
+.get('/profile', function(req,res) {
+    userCtrl.profileAction(req,res);
 })
 .get('/account', function(req,res) {
-    res.render('user/account',{});
-})
-.get('/albums', function(req,res) {
-    res.render('bucket/albums',{});
+    userCtrl.accountAction(req,res);
 })
 .get('/images', function(req,res) {
     res.render('bucket/images',{});

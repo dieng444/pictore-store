@@ -1,5 +1,10 @@
 $(document).ready(function(){
-  $("#icone-menu").bind('click',function() {
+  $("#album-form").hide();
+  $("#btn-add-album").click(function(){
+    $("#album-form").fadeToggle("fast","linear");
+    //$("#album-form").css("display","flex");
+  });
+  $("#icone-menu").click(function() {
     $("#navigations").fadeToggle("slow","linear");
   });
   /**
