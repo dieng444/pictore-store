@@ -57,8 +57,11 @@ app.set('view engine', 'twig')
 /**
  * Route permettant d'uploader les images
  * */
-.post('/uploadFiles', urlencodedParser, function(req,res) {
+.post('/images/add', urlencodedParser, function(req,res) {
   bucketCtrl.addImagesAction(req,res);
+})
+.get('/image/delete/:id/:bucketName/:albumName', function(req,res) {
+    bucketCtrl.deleteImageAction(req,res);
 })
 .post('/update', urlencodedParser, function(req,res) {
     userCtrl.updateAction(req,res);
@@ -98,9 +101,6 @@ app.set('view engine', 'twig')
 })
 .get('/user/delete/:id', function(req,res) {
     userCtrl.deleteUserAccountAction(req,res);
-})
-.get('/image/delete/:id', function(req,res) {
-    bucketCtrl.deleteImageAction(req,res);
 })
 .get('/about', function(req,res) {
     res.render('front/about',{});

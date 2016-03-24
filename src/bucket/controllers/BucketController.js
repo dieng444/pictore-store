@@ -50,16 +50,30 @@ function BucketController() {
     auth.isConnected(req, res,function(resp){
       if(resp) {
         var user = auth.getUser();
+        var domain = 'https://s3.amazonaws.com/';
         amodel.findOne(req.params.id, function(err, album) {
           if(!err) {
-            if(album!=null) {
-              imodel.findAllBy({album:album.getId()}, function(err,images) {
+            if (album!=null) {
+              bmodel.findOne(album.getBucket(), function(err, bucket) {
                 if (!err) {
-                  res.render('bucket/albumDetail',{user:user,images:images});
+                  console.log(album.getId());
+                  imodel.findAllBy({album:album.getId()}, function(err,images) {
+                    console.log(images);
+                    if (!err) {
+                      for(i in images)
+                        images[i].setUrl(domain+bucket.getName()+'/'+album.getName()+'/'+images[i].getName());
+                      res.render('bucket/albumDetail',{
+                        user: user,
+                        images: images,
+                        album: album,
+                        bucketName: bucket.getName()
+                      });
+                    }
+                  })
                 }
               })
-            }
-          } else res.render('500', util.getStatusMessage(500));
+            } else res.render('500', util.getStatusMessage(500));
+          }
         })
       } else res.redirect('/login');
     });
@@ -119,7 +133,7 @@ function BucketController() {
     };
     bmanager.sendFileObject(file.path, params, function(err,result) { //Sending file to aws cloud
       if(!err) {
-        var data = {name: file.filename, album: albumId, visibility:true};
+        var data = {name: file.filename, album: albumId};
         var image = new Image(data);
         imodel.save(image, function(err,result) { if(err) console.log(err); });
       } else console.log(err);
@@ -127,20 +141,20 @@ function BucketController() {
   }
   this.addImagesAction = function(req, res) {
     upload(req, res, function(err) { //uploading files on server disk
-      amodel.findOne(req.body.id, function(err, album) { //Getting images container album
-        if (!err && album!=null) {
+      amodel.findOne(req.body.albumId, function(err, album) { //Getting images container album
+        if (!err) {
           bmodel.findOne(album.getBucket(), function(err, bucket) { //Getting the bucket of the current user
             if(!err) {
               var files = req.files;
               for(i in files)
                 sendFile(files[i],bucket.getName(),album.getName(),album.getId());
-              res.redirect('/');
+              res.redirect('/album/'+album.getId());
             } else console.log(err);
           });
         } else {
           for(i in req.files) {
-            fs.unlink(req.files[i].path, function(errs) { //Delete files on server disk when errors occured
-              if (errs) console.error(errs);
+            fs.unlink(req.files[i].path, function(err) { //Delete files on server disk when errors occured
+              if (errs) console.error(err);
             });
           }
         }
@@ -181,13 +195,22 @@ function BucketController() {
   }
   this.deleteImageAction = function(req,res) {
     imodel.findOne(req.params.id, function(err, image) {
-      console.log(image);
       if(!err) {
-        imodel.remove(image, function(er,result) {
-          if(!er) res.redirect('/');
-          else console.log(er);
+        var params = {
+          Bucket: req.params.bucketName,
+          Key: req.params.albumName+'/'+image.getName()
+        }
+        bmanager.deleteObject(params, function() {
+          if(!err) {
+            imodel.remove(image, function(err,result) {
+              if(!err) {
+                res.set('Content-Type','application/json');
+                res.send({code:200,message:'Image supprimé avec succès'});
+              }
+            })
+          }
         })
-      } else console.log(err);
+      }
     })
   }
 }

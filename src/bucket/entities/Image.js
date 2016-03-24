@@ -13,8 +13,8 @@ var util = require('util');
 * @class
 * @param {Object} data - the data object with which to initialize the class attributes
 * @property {string} name - the image name
+* @property {string} url - the image display url
 * @property {album} album - album of the image
-* @property {string} visibility - allows to know if the image will be visible
 */
 function Image(data) {
 
@@ -24,11 +24,11 @@ function Image(data) {
   /***The image name**/
   var name;
 
+  /***The image display url**/
+  var url = null;
+
   /***The image container album***/
   var album;
-
-  /***the iamage visibility***/
-  var visibility;
 
   /**
   * @method
@@ -67,6 +67,24 @@ function Image(data) {
   }
 
   /**
+  * Allows to modify the image url
+  * @method
+  * @param {string} _url - the new url to assign
+  */
+  this.setUrl = function(_url) {
+    url = _url
+  }
+
+  /**
+  * Return the image display url
+  * @method
+  * @return {string}
+  */
+  this.getUrl = function() {
+    return url;
+  }
+
+  /**
   * Allows to modify the image current album
   * @method
   * @param {album} _album - the new album to assign
@@ -82,24 +100,6 @@ function Image(data) {
   */
   this.getAlbum = function() {
     return album;
-  }
-
-  /**
-  * Allows to modify the image visibility
-  * @method
-  * @param {boolean} _visibility - the new visibility to assign
-  */
-  this.setVisibility = function(_visibility) {
-    visibility = _visibility;
-  }
-
-  /**
-  * Return the image visibility value
-  * @method
-  * @return {boolean}
-  */
-  this.getVisibility = function() {
-    return visibility;
   }
 
   /***Inheritance of the super entity class*/

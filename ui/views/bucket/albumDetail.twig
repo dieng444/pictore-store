@@ -31,22 +31,36 @@
     </div>
   </div>
   <div id="b-content">
+    <div class="alert alert-success" role="alert"><p>Image supprimée avec succès</p></div>
+    <div class="alert alert-danger" role="alert"><p>Erreure survenue lors de la suppression de l'image</p></div>
     <div class="row">
       <div class="col-md-12">
         <button type="button" id="btn-add-album" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> Ajoutez des images</button>
         <form action="/images/add" method="post" id="album-form" enctype="multipart/form-data" class="album-detail">
           <input type="file" multiple="multiple" accept="image/*" name="uploadedImages"/>
+          <input type="hidden" name="albumId" value="{{album.getId}}">
           <input type="submit" name="submit-btn" class="s-btn" value="Ajouter">
         </form>
       </div>
     </div>
-    <div class="row">
+    <div id="images-container-row">
       {%if images | length > 0 %}
-        <div class="col-sm-6 col-md-4 image">
-          <a class="thumbnail" href="#">
-            <img src="/img/ferrari.jpg" alt="...">
-          </a>
-        </div>
+        {%for image in images%}
+          <div class="thumbnail">
+            <img src="{{image.getUrl}}" alt="{{image.getName}}">
+            <div class="caption">
+              <div class="action">
+                <div class="deleteImage action-item" title="Supprimer l'image"><i class="glyphicon glyphicon-trash"></i></div>
+                <input type="hidden" name="name" value="{{image.getId}}">
+                <input type="hidden" name="albumName" value="{{album.getName}}">
+                <input type="hidden" name="bucketName" value="{{bucketName}}">
+                <a class="downloadImage action-item" title="Télécharger l'image" download href="{{image.getUrl}}">
+                  <i class="glyphicon glyphicon-download-alt"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        {%endfor%}
       {%else%}
         <h2 class="no-content">Album vide</h2>
       {%endif%}

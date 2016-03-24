@@ -46,15 +46,17 @@
     <div class="row">
       {%if albums | length > 0 %}
         {%for album in albums%}
-          <a class="col-sm-6 col-md-4" href="/album/{{album.getId}}">
+          <div class="col-sm-6 col-md-4">
             <div class="thumbnail">
-              <img src="/img/ferrari.jpg" alt="...">
-              <div class="caption">
-                <h3>{{album.originalName}} - {{album.getLocation}}</h3>
-                <h3>{{album.getCreatedDate}}</h3>
-              </div>
+              <a href="/album/{{album.getId}}">
+                <img src="/img/ferrari.jpg" alt="...">
+                <div class="caption">
+                  <h3>{{album.originalName}} - {{album.getLocation}}</h3>
+                  <h3>{{album.getCreatedDate}}</h3>
+                </div>
+              </a>
             </div>
-          </a>
+          </div>
         {%endfor%}
       {%else%}
         <h2 class="no-content">Vous avez aucun album encore de créer.</h2>
