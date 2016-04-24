@@ -5,12 +5,6 @@ var express = require('express')
     , twig = require('twig')
     , UserController = require('./src/user/controllers/UserController')
     , BucketController = require('./src/bucket/controllers/BucketController');
-//AWS.config.region = 'us-standard';
-//Link api http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
-//Tutorial link http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-examples.html
-//Multiple uploads https://codeforgeek.com/2016/01/multiple-file-upload-node-js/
-//https://github.com/braitsch/node-login
-//MongoDb for Node.js http://mongodb.github.io/node-mongodb-native/2.1/api/
 
 var app = express();
 var userCtrl = new UserController();

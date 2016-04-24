@@ -32,8 +32,8 @@ function BucketController() {
 
   this.albumsAction = function(req,res) {
     auth.isConnected(req, res,function(resp){
-      var user = auth.getUser()
       if (resp) {
+        var user = auth.getUser();
         bmodel.findOneBy({owner:user.getId()}, function(err, bucket){
           amodel.findAllBy({bucket:bucket.getId()}, function(err,albums) {
             if (!err) {

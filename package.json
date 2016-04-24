@@ -11,5 +11,9 @@
     "util": "^0.10.3"
   },
   "author": "Macky Dieng <http://mackydieng.fr> - <github.com/dieng444>",
-  "description": "Sytème de sauvegarde externe des fichiers dans le cloud"
+  "description": "Sytème de sauvegarde externe des fichiers dans le cloud",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "main": "server.js"
 }
